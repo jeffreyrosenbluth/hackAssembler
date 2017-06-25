@@ -67,12 +67,3 @@ runCompiler :: [SInstruction] -> [Instruction Word16]
 runCompiler xs = runReader (compile xs) (Environment 16 symbols)
   where
     symbols = label 0 xs predefinedSymbols
-
-
-
-
--- compile :: [SInstruction] -> [Instruction Word16]
--- compile = foldr f []
---   where
---     f (Loop _)  xs = xs
---     f (Instr i) xs = immediate i : xs
