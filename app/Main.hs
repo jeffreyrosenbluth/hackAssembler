@@ -13,6 +13,7 @@ import           Text.Printf
 
 import           Lexer
 import           Parser
+import           Symbol
 import           Syntax
 
 main :: IO ()
@@ -29,7 +30,8 @@ main = do
           case parse parseProgram "<stdin>" src of
             Left err -> print err
             Right ast -> do
-              let out = concatMap (printf "%016b\n") (fromInstruction <$> ast)
+              let ast' = runCompiler ast
+                  out = concatMap (printf "%016b\n") (fromInstruction <$> ast')
               writeFile (asm2hack path) out
         else putStrLn "Error - source file does not exist."
     _  -> putStrLn "Error - too many command line arguments."

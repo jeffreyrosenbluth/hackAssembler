@@ -2,6 +2,7 @@ module Lexer  where
 
 import           Control.Applicative
 import           Control.Monad             (void)
+import           Data.Char
 import           Text.Megaparsec
 import qualified Text.Megaparsec.Lexer     as L
 import           Text.Megaparsec.Text.Lazy
@@ -26,3 +27,14 @@ parens = between (symbol "(") (symbol ")")
 
 contents :: Parser a -> Parser a
 contents p = sc *> p <* eof
+
+isHackSymbol :: Char -> Bool
+isHackSymbol c = isAlphaNum c || c `elem` "_.$:"
+
+isStartSymbol :: Char -> Bool
+isStartSymbol c = isAlpha c || c `elem` "_.$:"
+
+identifier :: Parser String
+identifier = lexeme  . try $ (:)
+         <$> satisfy isStartSymbol
+         <*> many (satisfy isHackSymbol) 

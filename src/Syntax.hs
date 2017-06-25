@@ -2,16 +2,24 @@ module Syntax where
 
 import           Data.Word
 
-data Instruction
-  = AInstr AInstruction
+data SInstruction
+  = Loop String
+  | Instr (Instruction AInstruction)
+  deriving Show
+
+data Instruction a
+  = AInstr a
   | CInstr CInstruction
   deriving Show
 
-fromInstruction :: Instruction -> Word16
+fromInstruction :: Instruction Word16 -> Word16
 fromInstruction (AInstr a) = a
 fromInstruction (CInstr c) = fromCinstruction c
 
-type AInstruction = Word16
+data AInstruction
+  = Immediate Word16
+  | Symbol String
+  deriving Show
 
 data CInstruction = CInstruction
   { comp :: Comp
