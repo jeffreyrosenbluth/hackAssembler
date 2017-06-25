@@ -3,17 +3,21 @@
 module Parser where
 
 import           Data.Text.Lazy            (Text)
+import           Data.Word
 import           Text.Megaparsec
 import           Text.Megaparsec.Text.Lazy (Parser)
 
 import           Lexer
 import           Syntax
 
-instruction :: Parser Instruction
-instruction = AInstr <$> aInstruction <|> CInstr <$> cInstruction
+instruction :: Parser SInstruction
+instruction = Loop <$> parens identifier
+          <|> Instr . AInstr <$> aInstruction
+          <|> Instr . CInstr <$> cInstruction
 
 aInstruction :: Parser AInstruction
-aInstruction = fromInteger <$> (symbol "@" *> integer)
+aInstruction = try (Immediate . fromInteger <$> (symbol "@" *> integer))
+           <|> Symbol <$> (symbol "@" *> identifier)
 
 cInstruction :: Parser CInstruction
 cInstruction = do
@@ -76,5 +80,5 @@ parseJump = option Null
   where
     semiSym str = symbol ";" *> symbol str
 
-parseProgram :: Parser [Instruction]
+parseProgram :: Parser [SInstruction]
 parseProgram = contents $ some instruction
